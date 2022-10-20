@@ -69,7 +69,7 @@ abstract contract ReentrancyGuard {
 
 // File @openzeppelin/contracts/utils/Context.sol@v4.7.3
 
-
+// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
 pragma solidity ^0.8.0;
@@ -97,7 +97,7 @@ abstract contract Context {
 
 // File @openzeppelin/contracts/access/Ownable.sol@v4.7.3
 
-
+// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)
 
 pragma solidity ^0.8.0;
@@ -180,10 +180,237 @@ abstract contract Ownable is Context {
 }
 
 
+// File @openzeppelin/contracts/utils/Address.sol@v4.7.3
+
+// SPDX-License-Identifier: MIT
+// OpenZeppelin Contracts (last updated v4.7.0) (utils/Address.sol)
+
+pragma solidity ^0.8.1;
+
+/**
+ * @dev Collection of functions related to the address type
+ */
+library Address {
+    /**
+     * @dev Returns true if `account` is a contract.
+     *
+     * [IMPORTANT]
+     * ====
+     * It is unsafe to assume that an address for which this function returns
+     * false is an externally-owned account (EOA) and not a contract.
+     *
+     * Among others, `isContract` will return false for the following
+     * types of addresses:
+     *
+     *  - an externally-owned account
+     *  - a contract in construction
+     *  - an address where a contract will be created
+     *  - an address where a contract lived, but was destroyed
+     * ====
+     *
+     * [IMPORTANT]
+     * ====
+     * You shouldn't rely on `isContract` to protect against flash loan attacks!
+     *
+     * Preventing calls from contracts is highly discouraged. It breaks composability, breaks support for smart wallets
+     * like Gnosis Safe, and does not provide security since it can be circumvented by calling from a contract
+     * constructor.
+     * ====
+     */
+    function isContract(address account) internal view returns (bool) {
+        // This method relies on extcodesize/address.code.length, which returns 0
+        // for contracts in construction, since the code is only stored at the end
+        // of the constructor execution.
+
+        return account.code.length > 0;
+    }
+
+    /**
+     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+     * `recipient`, forwarding all available gas and reverting on errors.
+     *
+     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+     * of certain opcodes, possibly making contracts go over the 2300 gas limit
+     * imposed by `transfer`, making them unable to receive funds via
+     * `transfer`. {sendValue} removes this limitation.
+     *
+     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
+     *
+     * IMPORTANT: because control is transferred to `recipient`, care must be
+     * taken to not create reentrancy vulnerabilities. Consider using
+     * {ReentrancyGuard} or the
+     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+     */
+    function sendValue(address payable recipient, uint256 amount) internal {
+        require(address(this).balance >= amount, "Address: insufficient balance");
+
+        (bool success, ) = recipient.call{value: amount}("");
+        require(success, "Address: unable to send value, recipient may have reverted");
+    }
+
+    /**
+     * @dev Performs a Solidity function call using a low level `call`. A
+     * plain `call` is an unsafe replacement for a function call: use this
+     * function instead.
+     *
+     * If `target` reverts with a revert reason, it is bubbled up by this
+     * function (like regular Solidity function calls).
+     *
+     * Returns the raw returned data. To convert to the expected return value,
+     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
+     *
+     * Requirements:
+     *
+     * - `target` must be a contract.
+     * - calling `target` with `data` must not revert.
+     *
+     * _Available since v3.1._
+     */
+    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionCall(target, data, "Address: low-level call failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
+     * `errorMessage` as a fallback revert reason when `target` reverts.
+     *
+     * _Available since v3.1._
+     */
+    function functionCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, 0, errorMessage);
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but also transferring `value` wei to `target`.
+     *
+     * Requirements:
+     *
+     * - the calling contract must have an ETH balance of at least `value`.
+     * - the called Solidity function must be `payable`.
+     *
+     * _Available since v3.1._
+     */
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
+     * with `errorMessage` as a fallback revert reason when `target` reverts.
+     *
+     * _Available since v3.1._
+     */
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        require(address(this).balance >= value, "Address: insufficient balance for call");
+        require(isContract(target), "Address: call to non-contract");
+
+        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        return verifyCallResult(success, returndata, errorMessage);
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but performing a static call.
+     *
+     * _Available since v3.3._
+     */
+    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+        return functionStaticCall(target, data, "Address: low-level static call failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+     * but performing a static call.
+     *
+     * _Available since v3.3._
+     */
+    function functionStaticCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal view returns (bytes memory) {
+        require(isContract(target), "Address: static call to non-contract");
+
+        (bool success, bytes memory returndata) = target.staticcall(data);
+        return verifyCallResult(success, returndata, errorMessage);
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but performing a delegate call.
+     *
+     * _Available since v3.4._
+     */
+    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+     * but performing a delegate call.
+     *
+     * _Available since v3.4._
+     */
+    function functionDelegateCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        require(isContract(target), "Address: delegate call to non-contract");
+
+        (bool success, bytes memory returndata) = target.delegatecall(data);
+        return verifyCallResult(success, returndata, errorMessage);
+    }
+
+    /**
+     * @dev Tool to verifies that a low level call was successful, and revert if it wasn't, either by bubbling the
+     * revert reason using the provided one.
+     *
+     * _Available since v4.3._
+     */
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata,
+        string memory errorMessage
+    ) internal pure returns (bytes memory) {
+        if (success) {
+            return returndata;
+        } else {
+            // Look for revert reason and bubble it up if present
+            if (returndata.length > 0) {
+                // The easiest way to bubble the revert reason is using memory via assembly
+                /// @solidity memory-safe-assembly
+                assembly {
+                    let returndata_size := mload(returndata)
+                    revert(add(32, returndata), returndata_size)
+                }
+            } else {
+                revert(errorMessage);
+            }
+        }
+    }
+}
+
+
 // File contracts/EthericeStaking.sol
 
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.16;
 
-pragma solidity ^0.8.0;
 
 
 interface TokenContractInterface {
@@ -236,7 +463,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         address indexed from,
         address indexed to,
         uint256 timestamp,
-        uint256 price,
+        uint256 sellAmount,
         uint256 indexed stakeId
     );
     event NewLoanRequest(
@@ -301,7 +528,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
     uint256 public devFees;
 
     /** Total ETH in the dividend pool for each day */
-    mapping(uint256 => uint256) public dayDivendPool;
+    mapping(uint256 => uint256) public dayDividendPool;
 
     /** Total tokens that have been staked each day */
     mapping(uint256 => uint256) public tokensInActiveStake;
@@ -318,7 +545,14 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
     /** The max amount of days user can stake */
     uint256 public maxStakeDays = 60;
 
-    constructor() {}
+    uint256 constant public devSellStakeFee = 10;
+    uint256 constant public devLoanFeePercent = 2;
+
+    address public deployer;
+
+    constructor() {
+        deployer = msg.sender;
+    }
 
     receive() external payable {}
 
@@ -327,8 +561,11 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         to the contract
         @param _address the token contract address
     */
-    function setTokenContractAddress(address _address) public onlyOwner {
-        require(tokenContractAddressSet == false);
+    function setTokenContractAddress(address _address) external {
+        require(_address != address(0), "Address cannot be zero");
+        require(tokenContractAddressSet == false, "Token contract address already set");
+        require(msg.sender==deployer, "Only deployer can set this value");
+        require(owner() != deployer, "Ownership must be transferred before contract start");
         tokenContractAddressSet = true;
         _tokenContract = TokenContractInterface(_address);
     }
@@ -338,13 +575,13 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         it out across the total div days
     */
     function receiveDivs() external payable {
-        // calcDay will return 2 when we're processesing the divs from day 1
+        // calcDay will return 2 when we're processing the divs from day 1
         uint256 _day =  _tokenContract.calcDay();
-        require(_day > 1);
+        require(_day > 1, "receive divs not yet enabled");
         // We process divs for previous day;
         _day--;
 
-        require(msg.sender == address(_tokenContract));
+        require(msg.sender == address(_tokenContract), "Unauthorized");
         uint256 _daysToSplitRewardsOver = _day < maxDividendRewardDays
             ? _day
             : maxDividendRewardDays;
@@ -356,7 +593,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         uint256 _totalDivsPerDay = msg.value / _daysToSplitRewardsOver ;
         
         for (uint256 i = 1; i <= _daysToSplitRewardsOver; ) {
-            dayDivendPool[_day + i] += _totalDivsPerDay;
+            dayDividendPool[_day + i] += _totalDivsPerDay;
             unchecked {
                 i++;
             }
@@ -365,11 +602,11 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
 
     /**
         @dev update the max days dividends are spread over
-        @param _val the max days
+        @param _newMaxRewardDays the max days
     */
-    function updateMaxDividendRewardDays(uint256 _val) external onlyOwner {
-        require((_val <= 60 && _val >= 10));
-        maxDividendRewardDays = _val;
+    function updateMaxDividendRewardDays(uint256 _newMaxRewardDays) external onlyOwner {
+        require((_newMaxRewardDays <= 60 && _newMaxRewardDays >= 10), "New value must be <= 60 & >= 10");
+        maxDividendRewardDays = _newMaxRewardDays;
     }
 
     /**
@@ -377,7 +614,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
      * @param _amount the number of days
      */
     function updateMaxStakeDays(uint256 _amount) external onlyOwner {
-        require((_amount <= 300 && _amount > 30));
+        require((_amount <= 300 && _amount > 30), "New value must be <= 300 and > 30");
         maxStakeDays = _amount;
     }
 
@@ -387,7 +624,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
      * @param _days must be less than max stake days. 
      * the more days the higher the gas fee
      */
-    function newStake(uint256 _amount, uint256 _days) external {
+    function newStake(uint256 _amount, uint256 _days) external nonReentrant {
         require(_days > 1, "Staking: Staking days < 1");
         require(
             _days <= maxStakeDays,
@@ -397,12 +634,11 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         uint256 _currentDay = _tokenContract.calcDay();
         require(_currentDay > 0, "Staking not enabled");
 
-        // TODO confirm best point in this function todo the transfer
         bool success = _tokenContract.transferFrom(msg.sender, address(this), _amount);
         require(success, "Transfer failed");
 
 
-        uint256 _stakeId = getNextStakeId();
+        uint256 _stakeId = _getNextStakeId();
 
         uint256 _endDay =_currentDay + 1 + _days;
         uint256 _startDay = _currentDay + 1;
@@ -416,7 +652,6 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
             loanRepayments: 0
         });
 
-        // todo loop potential to optimize?
         for (uint256 i = _startDay; i < _endDay ;) {
             tokensInActiveStake[i] += _amount;
 
@@ -431,7 +666,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
     /** 
      * @dev Get the next stake id index 
      */
-    function getNextStakeId() internal returns (uint256) {
+    function _getNextStakeId() internal returns (uint256) {
         lastStakeIndex++;
         return lastStakeIndex;
     }
@@ -440,7 +675,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
      * @dev called by user to collect an outstading stake
      */
     function collectStake(uint256 _stakeId) external nonReentrant {
-        stake memory _stake = mapStakes[_stakeId];
+        stake storage _stake = mapStakes[_stakeId];
         uint256 currentDay = _tokenContract.calcDay();
         
         require(_stake.owner == msg.sender, "Unauthorised");
@@ -448,16 +683,19 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         require( currentDay > _stake.endDay , "Stake hasn't ended");
 
         // Check for outstanding loans
-        loan memory _loan = mapLoans[_stakeId];
+        loan storage _loan = mapLoans[_stakeId];
         if(_loan.filledBy != address(0)){
             // Outstanding loan has not been paid off 
             // so do that now
             repayLoan(_stakeId);
         } else if (_loan.requestedBy != address(0)) {
-            clearLoan(_stakeId);   
+            _clearLoan(_stakeId);   
         }
 
-         // Get the loan from storage agaign 
+        // Get new instance of loan after potential updates
+        _loan = mapLoans[_stakeId];
+
+         // Get the loan from storage again 
          // and check its cleard before we move on
         require(_loan.filledBy == address(0), "Stake has unpaid loan");
         require(_loan.requestedBy == address(0), "Stake has outstanding loan request");
@@ -473,7 +711,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         require(success, "Transfer failed");
 
         // Send the user divs
-        payable(_stake.owner).transfer(profit);
+        Address.sendValue( payable(_stake.owner) , profit);
 
         emit StakeCollected(
             _stake.owner,
@@ -489,7 +727,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
      * so it cant be canceled by just anyone externally
      */
     function cancelLoanRequest(uint256 _stakeId) external {
-        stake memory _stake = mapStakes[_stakeId];
+        stake storage _stake = mapStakes[_stakeId];
         require(msg.sender == _stake.owner, "Unauthorised");
         _cancelLoanRequest(_stakeId);
     }
@@ -512,8 +750,8 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         );
     }
 
-    function clearLoan(uint256 _stakeId) internal {
-        loan memory _loan = mapLoans[_stakeId];
+    function _clearLoan(uint256 _stakeId) internal {
+        loan storage _loan = mapLoans[_stakeId];
          if(_loan.filledBy == address(0)) {
                 // Just an unfilled loan request so we can cancel it off
                 _cancelLoanRequest(_stakeId);
@@ -536,13 +774,13 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         uint256 currentDay = _tokenContract.calcDay();
         uint256 userDivs;
         stake memory _stake = mapStakes[_stakeId];
-        // @loop can we optimize?
+
         for (
             uint256 _day = _stake.startDay;
             _day < _stake.endDay && _day < currentDay;
         ) {
             userDivs +=
-                (dayDivendPool[_day] * _stake.tokensStaked) /
+                (dayDividendPool[_day] * _stake.tokensStaked) /
                 tokensInActiveStake[_day];
 
                 unchecked {
@@ -566,7 +804,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         require(_stake.endDay >= _currentDay, "Stake has ended");
 
          // can't list a stake for sale whilst we have an outstanding loan against it
-        loan memory _loan = mapLoans[_stakeId];
+        loan storage _loan = mapLoans[_stakeId];
         require(_loan.requestedBy == address(0), "Stake has an outstanding loan request");
 
         mapStakes[_stakeId].forSalePrice = _price;
@@ -579,6 +817,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
 
     function cancelStakeSellRequest(uint256 _stakeId) external {
         require(mapStakes[_stakeId].owner == msg.sender, "Unauthorised");
+        require(mapStakes[_stakeId].forSalePrice > 0, "Stake is not for sale");
         mapStakes[_stakeId].forSalePrice = 0;
 
         emit CancelStakeSellRequest(
@@ -593,7 +832,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         require(_stake.forSalePrice > 0, "Stake not for sale");
         require(_stake.owner != msg.sender, "Can't buy own stakes");
 
-        loan memory _loan = mapLoans[_stakeId];
+        loan storage _loan = mapLoans[_stakeId];
         require(_loan.filledBy == address(0), "Can't buy stake with unpaid loan");
 
         uint256 _currentDay = _tokenContract.calcDay();
@@ -604,9 +843,10 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         require(_stake.hasCollected == false, "Stake already collected");
         require(msg.value >= _stake.forSalePrice, "msg.value is < stake price");
 
-        uint256 _sellAmount = (_stake.forSalePrice * 90) / 100;
-        uint256 _devShare = msg.value - _sellAmount;
-        dayDivendPool[_currentDay] += _devShare / 2;
+        uint256 _devShare = (_stake.forSalePrice * devSellStakeFee) / 100;
+        uint256 _sellAmount =  _stake.forSalePrice - _devShare;
+
+        dayDividendPool[_currentDay] += _devShare / 2;
         devFees += _devShare / 2;
 
         _userStakes[msg.sender].push(_stakeId);
@@ -614,7 +854,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         mapStakes[_stakeId].owner = msg.sender;
         mapStakes[_stakeId].forSalePrice = 0;
 
-        payable(_stake.owner).transfer(_sellAmount);
+        Address.sendValue(payable(_stake.owner), _sellAmount);
 
         emit StakeSold(
             _stake.owner,
@@ -634,7 +874,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         address _devWallet = _tokenContract.dev_addr();
         uint256 _devFees = devFees;
         devFees = 0;
-        payable(_devWallet).transfer(_devFees);
+        Address.sendValue(payable(_devWallet), _devFees);
     }
 
     function requestLoanOnStake(
@@ -644,14 +884,14 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         uint256 _duration
     ) external {
 
-        stake memory _stake = mapStakes[_stakeId];
+        stake storage _stake = mapStakes[_stakeId];
         require(_stake.owner == msg.sender, "Unauthorised");
         require(_stake.hasCollected == false, "Already Collected");
 
         uint256 _currentDay = _tokenContract.calcDay();
         require(_stake.endDay > (_currentDay + _duration), "Loan must expire before stake end day");
 
-        loan memory _loan = mapLoans[_stakeId];
+        loan storage _loan = mapLoans[_stakeId];
         require(_loan.filledBy == address(0), "Stake already has outstanding loan");
 
         uint256 userDivs = calcStakeCollecting(_stakeId);
@@ -678,9 +918,9 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         );
     }
 
-    function fillLoan(uint256 _stakeId) external payable {
-        stake memory _stake = mapStakes[_stakeId];
-        loan memory _loan = mapLoans[_stakeId];
+    function fillLoan(uint256 _stakeId) external payable nonReentrant {
+        stake storage _stake = mapStakes[_stakeId];
+        loan storage _loan = mapLoans[_stakeId];
         
         require(_loan.requestedBy != address(0), "No active loan on this stake");
         require(_stake.hasCollected == false, "Stake Collected");
@@ -688,6 +928,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         uint256 _currentDay = _tokenContract.calcDay();
         require(_stake.endDay > _currentDay, "Stake ended");
 
+        require(_stake.endDay > (_currentDay + _loan.loanDuration), "Loan must expire before stake end day");
         
         require(_loan.filledBy == address(0), "Already filled");
         require(_loan.loanAmount <= msg.value, "Not enough eth");
@@ -710,13 +951,14 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         });
 
         // Deduct fees
-        uint256 _loanAmount = (_loan.loanAmount * 98) / 100;
-        uint256 _devShare = msg.value - _loanAmount;
-        dayDivendPool[_currentDay] += _devShare / 2;
+        uint256 _devShare = (_loan.loanAmount * devLoanFeePercent) / 100;
+        uint256 _loanAmount = _loan.loanAmount - _devShare; 
+
+        dayDividendPool[_currentDay] += _devShare / 2;
         devFees += _devShare / 2;
 
         // Send the loan to the requester
-        payable(_loan.requestedBy).transfer(_loanAmount);
+        Address.sendValue(payable(_loan.requestedBy), _loanAmount);
 
         _userLends[msg.sender].push(_stakeId);
 
@@ -754,7 +996,7 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
 
         _cancelLoanRequest(_stakeId);
         
-        payable(_loan.filledBy).transfer(_loan.loanAmount + _loan.loanInterest);
+        Address.sendValue(payable(_loan.filledBy), _loan.loanAmount + _loan.loanInterest);
 
         // address indexed paidTo,
         // uint256 timestamp,
@@ -776,10 +1018,10 @@ contract EthericeStaking is Ownable, ReentrancyGuard {
         if(_day <= 0) {
             return 0;
         }
-        uint256 _startDay = (_day - 1);
+        uint256 _startDay = _day;
         uint256 _total;
-        for (uint256 i = 1; i <= (_startDay +  maxDividendRewardDays) ; ) {
-            _total += dayDivendPool[_startDay + i];
+        for (uint256 i = 0; i <= (_startDay +  maxDividendRewardDays) ; ) {
+            _total += dayDividendPool[_startDay + i];
             unchecked {
                  i++;
             }
