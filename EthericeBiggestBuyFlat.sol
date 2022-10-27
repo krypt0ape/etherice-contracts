@@ -68,8 +68,6 @@ abstract contract ReentrancyGuard {
 
 
 // File @openzeppelin/contracts/utils/Context.sol@v4.7.3
-
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
 pragma solidity ^0.8.0;
@@ -96,8 +94,6 @@ abstract contract Context {
 
 
 // File @openzeppelin/contracts/access/Ownable.sol@v4.7.3
-
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)
 
 pragma solidity ^0.8.0;
@@ -181,8 +177,6 @@ abstract contract Ownable is Context {
 
 
 // File @openzeppelin/contracts/utils/Address.sol@v4.7.3
-
-// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.7.0) (utils/Address.sol)
 
 pragma solidity ^0.8.1;
@@ -407,8 +401,6 @@ library Address {
 
 
 // File contracts/EthericeBiggestBuy.sol
-
-// SPDX-License-Identifier: MIT
 pragma solidity 0.8.16;
 
 
